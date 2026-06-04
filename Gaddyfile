@@ -4,13 +4,6 @@
 
 :80 {
     root * /app
-    encode zstd gzip
- php_server {
-		env MYSQLHOST {$MYSQLHOST}
-		env MYSQLUSER {$MYSQLUSER}
-		env MYSQLPASSWORD {$MYSQLPASSWORD}
-		env MYSQLDATABASE {$MYSQLDATABASE}
-		env MYSQLPORT {$MYSQLPORT}
-	}
+    php_server 
     file_server
 }
