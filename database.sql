@@ -8,31 +8,52 @@ USE `sims_db`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
+  `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `country` varchar(100) NOT NULL,
+  `gender` varchar(20) NOT NULL,
+  `profile_image` varchar(255) DEFAULT 'default.png',
   `role` enum('admin','student') DEFAULT 'student',
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Insert default admin
-INSERT INTO `users` (`name`, `email`, `password`, `role`) VALUES
-('Admin User', 'admin@sims.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'); -- password is 'password'
+-- Insert default admin (password is 'password')
+INSERT INTO `users` (`name`, `username`, `email`, `password`, `country`, `gender`, `role`) VALUES
+('Admin User', 'simsadmin', 'admin@sims.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'United States', 'Male', 'admin');
+
+-- Table structure for `categories`
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `categories` (`name`, `description`) VALUES
+('Engineering', 'Engineering and Technology courses'),
+('Business', 'Business Management and Finance courses'),
+('Arts', 'Creative Arts and Design courses');
 
 -- Table structure for `courses`
 CREATE TABLE `courses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `department` varchar(100) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `courses` (`name`, `department`) VALUES
-('Computer Science', 'Engineering'),
-('Business Administration', 'Business'),
-('Graphic Design', 'Arts');
+INSERT INTO `courses` (`name`, `category_id`) VALUES
+('Computer Science', 1),
+('Business Administration', 2),
+('Graphic Design', 3);
 
 -- Table structure for `students`
 CREATE TABLE `students` (
@@ -76,3 +97,41 @@ CREATE TABLE `feedback` (
   `date` timestamp DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table structure for `inventory`
+CREATE TABLE `inventory` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(100) NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 0,
+  `status` enum('Available','Unavailable','Maintenance') DEFAULT 'Available',
+  `last_updated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `inventory` (`item_name`, `type`, `quantity`, `status`) VALUES
+('Dell Laptops', 'Electronics', 15, 'Available'),
+('Classroom Projector', 'Equipment', 5, 'Available'),
+('Calculus Textbooks', 'Books', 50, 'Available');
+
+-- Table structure for `login_attempts`
+CREATE TABLE `login_attempts` (
+  `ip_address` varchar(45) NOT NULL,
+  `attempts` int(11) NOT NULL DEFAULT 1,
+  `last_attempt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ip_address`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table structure for `settings`
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting_key` varchar(50) NOT NULL,
+  `setting_value` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `setting_key` (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
+('system_name', 'SIMS Portal'),
+('allow_registration', '1'),
+('max_login_attempts', '5');

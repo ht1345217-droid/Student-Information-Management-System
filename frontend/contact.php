@@ -1,10 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-        'cookie_httponly' => true,
-        'cookie_samesite' => 'Strict'
-    ]);
-}
+require_once '../config/db.php';
+start_secure_session();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +22,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </ul>
         <div class="nav-actions">
             <?php if(isset($_SESSION['user_id'])): ?>
-                <span class="user-greeting"><i class="fa-solid fa-user-circle"></i> Hello, <?php echo htmlspecialchars($_SESSION['name']); ?></span>
+                <span class="user-greeting"><i class="fa-solid fa-user-circle"></i> Hello, <?php echo xss_clean($_SESSION['name']); ?></span>
                 <?php if($_SESSION['role'] === 'admin'): ?>
                     <a href="../admin/dashboard.php" class="btn btn-outline">Admin Panel</a>
                 <?php endif; ?>
@@ -47,7 +43,8 @@ if (session_status() === PHP_SESSION_NONE) {
         
         <div style="flex: 1; min-width: 300px;">
             <h2>Send us a message</h2>
-            <form action="feedback.php" method="GET" style="margin-top: 1.5rem;" class="form-container" style="margin: 0; padding: 0; box-shadow: none;">
+            <form action="feedback.php" method="POST" style="margin-top: 1.5rem;" class="form-container" style="margin: 0; padding: 0; box-shadow: none;">
+                <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                 <p style="margin-bottom: 1rem; color: var(--light-text);">Want to leave official feedback? <a href="feedback.php">Use our feedback form</a>.</p>
                 <div class="form-group">
                     <label for="c_name">Full Name</label>
@@ -72,14 +69,12 @@ if (session_status() === PHP_SESSION_NONE) {
             <p style="margin-top: 0.5rem; color: #555;"><i class="fa-solid fa-envelope" style="color:var(--primary-color);"></i> support@sims.edu</p>
             
             <div style="margin-top: 2rem; border-radius: var(--radius); overflow: hidden; height: 300px;">
-                <!-- Embedded Google Map -->
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3345.961025531981!2d-96.75389658481223!3d32.99026418090729!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x864c21ff895e4d29%3A0xe54d80d28b17b6a4!2sThe%20University%20of%20Texas%20at%20Dallas!5e0!3m2!1sen!2sus!4v1689620000000!5m2!1sen!2sus" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
 
     </section>
 
-    <!-- Footer -->
     <footer style="margin-top:auto;">
         <div class="footer-bottom">
             <p>&copy; 2026 SIMS Portal. All rights reserved.</p>

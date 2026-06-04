@@ -101,16 +101,35 @@ document.addEventListener("DOMContentLoaded", function() {
         signupForm.addEventListener("submit", function(e) {
             let isValid = true;
             
-            // Name validation (no special chars, reasonable length)
+            // Name validation (no special chars, letters and spaces only, 3 to 50 chars)
             const nameField = document.getElementById("name");
             const nameError = document.getElementById("nameError");
             const nameRegex = /^[A-Za-z\s]{3,50}$/;
-            if(!nameRegex.test(nameField.value)) {
+            if(!nameRegex.test(nameField.value.trim())) {
                 nameError.style.display = "block";
-                nameError.textContent = "Name must be 3-50 characters long and contain only letters.";
+                nameError.textContent = "Name must be 3-50 characters long and contain only letters and spaces.";
                 isValid = false;
             } else {
                 nameError.style.display = "none";
+            }
+
+            // Username validation
+            const usernameField = document.getElementById("username");
+            const usernameError = document.getElementById("usernameError");
+            const usernameValue = usernameField.value.trim();
+            const reservedUsernames = ['admin', 'administrator', 'root', 'superadmin', 'system'];
+            const usernameRegex = /^[A-Za-z][A-Za-z0-9]*$/;
+            
+            if(reservedUsernames.includes(usernameValue.toLowerCase())) {
+                usernameError.style.display = "block";
+                usernameError.textContent = "This username is reserved. Please choose another username.";
+                isValid = false;
+            } else if(!usernameRegex.test(usernameValue)) {
+                usernameError.style.display = "block";
+                usernameError.textContent = "Username must start with an alphabet, contain no special characters, and can only include letters and numbers.";
+                isValid = false;
+            } else {
+                usernameError.style.display = "none";
             }
 
             // Email validation
@@ -124,6 +143,32 @@ document.addEventListener("DOMContentLoaded", function() {
                     isValid = false;
                 } else {
                     emailError.style.display = "none";
+                }
+            }
+
+            // Country validation
+            const countryField = document.getElementById("country");
+            const countryError = document.getElementById("countryError");
+            if(countryField && countryError) {
+                if(countryField.value === "") {
+                    countryError.style.display = "block";
+                    countryError.textContent = "Please select your country. Country selection is mandatory.";
+                    isValid = false;
+                } else {
+                    countryError.style.display = "none";
+                }
+            }
+
+            // Gender validation
+            const genderField = document.getElementById("gender");
+            const genderError = document.getElementById("genderError");
+            if(genderField && genderError) {
+                if(genderField.value === "") {
+                    genderError.style.display = "block";
+                    genderError.textContent = "Please select a gender. Gender selection is mandatory.";
+                    isValid = false;
+                } else {
+                    genderError.style.display = "none";
                 }
             }
 

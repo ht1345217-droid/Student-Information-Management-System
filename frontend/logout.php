@@ -1,11 +1,7 @@
 <?php
-// Secure session start settings
-if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-        'cookie_httponly' => true,
-        'cookie_samesite' => 'Strict'
-    ]);
-}
+require_once '../config/db.php';
+start_secure_session();
+
 
 // Unset all session variables
 $_SESSION = array();

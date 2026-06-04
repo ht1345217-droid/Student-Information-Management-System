@@ -1,11 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-        'cookie_httponly' => true,
-        'cookie_samesite' => 'Strict'
-    ]);
-}
 require_once '../config/db.php';
+start_secure_session();
+
 
 // Fetch courses
 $courses_sql = "SELECT * FROM courses";

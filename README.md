@@ -79,8 +79,8 @@ $dbname = "your_db_name";
 ### 4. Admin Credentials
 Once the site is live, you can log in as the administrator using the default credentials:
 - **URL**: `http://yourdomain.com/frontend/login.php`
-- **Email**: `admin@sims.com`
-- **Password**: `password`
+- **Email**: `ht1345217@gmail.com'
+- **Password**: `hiba@12345'
 
 You can also test the student login by registering a new account via the Signup page.
 

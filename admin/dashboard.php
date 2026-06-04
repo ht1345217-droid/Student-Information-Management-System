@@ -1,18 +1,15 @@
 <?php
-session_start();
-require_once '../config/db.php';
-
-// Check if admin is logged in
-if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../frontend/login.php");
-    exit();
-}
+require_once 'auth_check.php';
 
 // Fetch some basic stats
 $total_students = $conn->query("SELECT COUNT(*) as count FROM students")->fetch_assoc()['count'];
 $total_courses = $conn->query("SELECT COUNT(*) as count FROM courses")->fetch_assoc()['count'];
 $total_revenue = $conn->query("SELECT SUM(amount) as total FROM transactions WHERE status='Paid'")->fetch_assoc()['total'];
 $total_feedback = $conn->query("SELECT COUNT(*) as count FROM feedback")->fetch_assoc()['count'];
+$total_categories = $conn->query("SELECT COUNT(*) as count FROM categories")->fetch_assoc()['count'];
+$total_inventory = $conn->query("SELECT SUM(quantity) as total FROM inventory")->fetch_assoc()['total'];
+
+$active_page = 'dashboard';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,26 +23,15 @@ $total_feedback = $conn->query("SELECT COUNT(*) as count FROM feedback")->fetch_
 <body>
 
     <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <i class="fa-solid fa-graduation-cap"></i> SIMS Admin
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.php" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
-            <li><a href="students.php"><i class="fa-solid fa-users"></i> Students</a></li>
-            <li><a href="courses.php"><i class="fa-solid fa-book-open"></i> Courses</a></li>
-            <li><a href="transactions.php"><i class="fa-solid fa-money-bill-wave"></i> Transactions</a></li>
-            <li><a href="../frontend/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
+    <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="main-content">
         <header class="topbar">
             <h2>Dashboard Overview</h2>
             <div class="user-info">
-                <i class="fa-solid fa-user-circle fa-2x"></i>
-                <span><?php echo htmlspecialchars($_SESSION['name']); ?></span>
+                <i class="fa-solid fa-user-circle fa-2x" style="color: var(--primary-color);"></i>
+                <span><?php echo xss_clean($_SESSION['name']); ?></span>
             </div>
         </header>
 
@@ -79,6 +65,20 @@ $total_feedback = $conn->query("SELECT COUNT(*) as count FROM feedback")->fetch_
                     </div>
                     <i class="fa-solid fa-comments"></i>
                 </div>
+                <div class="stat-card">
+                    <div>
+                        <h3>Course Categories</h3>
+                        <h2><?php echo $total_categories; ?></h2>
+                    </div>
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <div class="stat-card">
+                    <div>
+                        <h3>Inventory Stock</h3>
+                        <h2><?php echo number_format($total_inventory ?: 0); ?></h2>
+                    </div>
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </div>
             </div>
 
             <!-- Recent Students Table -->
@@ -100,9 +100,9 @@ $total_feedback = $conn->query("SELECT COUNT(*) as count FROM feedback")->fetch_
                             while($row = $recent->fetch_assoc()):
                         ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($row['student_id']); ?></td>
-                            <td><?php echo htmlspecialchars($row['name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td><?php echo xss_clean($row['student_id']); ?></td>
+                            <td><?php echo xss_clean($row['name']); ?></td>
+                            <td><?php echo xss_clean($row['email']); ?></td>
                             <td><?php echo date('M d, Y', strtotime($row['created_at'])); ?></td>
                         </tr>
                         <?php 
