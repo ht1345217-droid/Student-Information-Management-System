@@ -9,6 +9,10 @@ $port = (int)getenv('MYSQLPORT');
 // Create connection
 $conn = new mysqli($host, $username, $password, $dbname, $port);
 
+function start_secure_session() {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 // Check connection
 if ($conn->connect_error) {
     // Return a generic friendly error without exposing database connection details
