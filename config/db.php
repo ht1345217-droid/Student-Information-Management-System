@@ -1,12 +1,13 @@
 <?php
 // config/db.php
-$host = "localhost";
-$username = "root"; // Default for XAMPP/WAMP
-$password = ""; // Default empty
-$dbname = "sims_db"; 
+$host = getenv('MYSQLHOST');
+$username = getenv('MYSQLUSER');
+$password = getenv('MYSQLPASSWORD');
+$dbname = getenv('MYSQLDATABASE');
+$port = (int)getenv('MYSQLPORT');
 
 // Create connection
-$conn = new mysqli($host, $username, $password, $dbname);
+$conn = new mysqli($host, $username, $password, $dbname, $port);
 
 // Check connection
 if ($conn->connect_error) {
